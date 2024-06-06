@@ -19,3 +19,7 @@ pattern = "**/*.go"
 
 [languages.go.languageServer]
 start = "gopls serve"
+
+[[ports]]
+localPort = 8080
+externalPort = 80

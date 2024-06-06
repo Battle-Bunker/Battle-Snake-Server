@@ -1,35 +1,40 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
-	"github.com/BattlesnakeOfficial/rules/cli/commands"
-	"log"
-	"net/http"
+    "encoding/json"
+    "fmt"
+    "github.com/BattlesnakeOfficial/rules/cli/commands"
+    "log"
+    "net/http"
     "os"
 )
 
-
 // Amend PlayRequest to accept a collection of players
 type PlayRequest struct {
-	Players []commands.Player `json:"players"`
+    Players []commands.Player `json:"players"`
 }
 
 // Define a struct to hold the JSON data for index response
 type IndexResponse struct {
-	Status string `json:"status"`
+    Status string `json:"status"`
 }
 
 func main() {
-	// Set up a route and handler function
-	http.HandleFunc("/play", playHandler)
+    // Retrieve the PORT from the environment variable
+    port := os.Getenv("PORT")
+    if port == "" {
+        port = "8080" // Fallback to 8080 if PORT is not set
+    }
 
-	// Set up a route and handler function for the index page
-	http.HandleFunc("/", indexHandler)
+    // Set up a route and handler function
+    http.HandleFunc("/play", playHandler)
 
-	// Start the HTTP server
-	fmt.Println("Server is running on http://localhost:8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+    // Set up a route and handler function for the index page
+    http.HandleFunc("/", indexHandler)
+
+    // Start the HTTP server
+    fmt.Printf("Server is running on port %s\n", port)
+    log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), nil))
 }
 
 // playHandler handles the POST request to the '/play' endpoint
@@ -67,15 +72,15 @@ func playHandler(w http.ResponseWriter, r *http.Request) {
 
 // indexHandler handles the GET requests to the index page
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	// Check if the request method is GET
-	if r.Method != "GET" {
-		http.Error(w, "Only GET method is allowed", http.StatusMethodNotAllowed)
-		return
-	}
-	// Create response object
-	response := IndexResponse{Status: "Ok"}
-	// Set Content-Type header
-	w.Header().Set("Content-Type", "application/json")
-	// Encode the response as JSON and send it
-	json.NewEncoder(w).Encode(response)
+    // Check if the request method is GET
+    if r.Method != "GET" {
+        http.Error(w, "Only GET method is allowed", http.StatusMethodNotAllowed)
+        return
+    }
+    // Create response object
+    response := IndexResponse{Status: "Ok"}
+    // Set Content-Type header
+    w.Header().Set("Content-Type", "application/json")
+    // Encode the response as JSON and send it
+    json.NewEncoder(w).Encode(response)
 }
